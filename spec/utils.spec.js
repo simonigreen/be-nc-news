@@ -30,7 +30,7 @@ describe('formatDates', () => {
       }
     ]);
   });
-  it('returns an object with everything in the object unchanged when the object does not include a created_at', () => {
+  it('returns an object with everything in the object unchanged when the object does not include a created_at property', () => {
     expect([
       {
         title: 'Living in the shadow of a great man',
@@ -49,7 +49,7 @@ describe('formatDates', () => {
       }
     ]);
   });
-  it('returns an object with the date converted to a JavaScript date object when passed a unix timestamp', () => {
+  it('returns an object with the created_at date converted to a JavaScript date object when the passed in object contains a unix timestamp', () => {
     const converted = formatDates([
       {
         title: 'Living in the shadow of a great man',
@@ -65,7 +65,7 @@ describe('formatDates', () => {
 });
 
 describe('makeRefObj', () => {
-  it('returns an empty array when passed an empty array', () => {
+  it('returns an empty object when passed an empty array', () => {
     expect(makeRefObj([])).to.eql({});
   });
   it('does not mutate the passed in array', () => {
@@ -93,7 +93,7 @@ describe('makeRefObj', () => {
       }
     ]);
   });
-  it('returns an array containing a single reference object with the key being the aritcle title and the value being the article_id when passed an array containing a single object', () => {
+  it('returns an array containing a reference object with a single key and value, with the key being the article title and the value being the article_id when passed an array containing a single article object', () => {
     expect(
       makeRefObj([
         {
@@ -108,7 +108,7 @@ describe('makeRefObj', () => {
       ])
     ).to.eql({ 'Living in the shadow of a great man': 1 });
   });
-  it('creates reference object correctly when passed an array containing several article objects', () => {
+  it('creates a reference object with a key and value pair for each article object when passed an array containing several article objects', () => {
     expect(
       makeRefObj([
         {
