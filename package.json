@@ -24,7 +24,11 @@
   "homepage": "https://github.com/northcoders/be-nc-news#readme",
   "dependencies": {
     "knex": "^0.19.4",
+    "lodash": "^4.17.15",
     "pg": "^7.12.1"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^6.2.0"
+  }
 }

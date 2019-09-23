@@ -9,7 +9,7 @@ exports.up = function(knex) {
       .defaultTo(0)
       .notNullable();
     articlesTable
-      .string('slug')
+      .string('topic')
       .references('topics.slug')
       .notNullable();
     articlesTable
