@@ -9,6 +9,17 @@ exports.formatDates = list => {
   return newList;
 };
 
-exports.makeRefObj = list => {};
+exports.makeRefObj = list => {
+  // return [];
+  const newList = _.cloneDeep(list);
+
+  const refObj = {};
+
+  newList.forEach(article => {
+    refObj[article.title] = article.article_id;
+  });
+  console.log(refObj);
+  return refObj;
+};
 
 exports.formatComments = (comments, articleRef) => {};
