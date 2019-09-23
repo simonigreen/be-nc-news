@@ -145,4 +145,132 @@ describe('makeRefObj', () => {
   });
 });
 
-describe('formatComments', () => {});
+describe('formatComments', () => {
+  it('returns an empty array when passed an empty array', () => {
+    expect(formatComments([])).to.eql([]);
+  });
+  it('does not mutate the passed in array', () => {
+    const input = [
+      {
+        body:
+          "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+        belongs_to: "They're not exactly dogs, are they?",
+        created_by: 'butter_bridge',
+        votes: 16,
+        created_at: 1511354163389
+      }
+    ];
+    formatComments(input, {
+      "They're not exactly dogs, are they?": 9
+    });
+    expect(input).to.eql([
+      {
+        body:
+          "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+        belongs_to: "They're not exactly dogs, are they?",
+        created_by: 'butter_bridge',
+        votes: 16,
+        created_at: 1511354163389
+      }
+    ]);
+  });
+  it('returns an array containing an object where the "created_by" property renamed to an "author" key, "belongs_to" property renamed to an "article_id" key and the value of the new "article_id" key is the id corresponding to the original title value provided', () => {
+    expect(
+      formatComments(
+        [
+          {
+            body:
+              "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+            belongs_to: "They're not exactly dogs, are they?",
+            created_by: 'butter_bridge',
+            votes: 16
+          }
+        ],
+        {
+          "They're not exactly dogs, are they?": 9
+        }
+      )
+    ).to.eql([
+      {
+        body:
+          "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+        article_id: 9,
+        author: 'butter_bridge',
+        votes: 16
+      }
+    ]);
+  });
+  it('will correctly format several comments objects when passed an array containing more than one comment object', () => {
+    expect(
+      formatComments(
+        [
+          {
+            body:
+              "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+            belongs_to: "They're not exactly dogs, are they?",
+            created_by: 'butter_bridge',
+            votes: 16
+          },
+          {
+            body:
+              'The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.',
+            belongs_to: 'Living in the shadow of a great man',
+            created_by: 'butter_bridge',
+            votes: 14
+          },
+          {
+            body:
+              'Replacing the quiet elegance of the dark suit and tie with the casual indifference of these muted earth tones is a form of fashion suicide, but, uh, call me crazy — onyou it works.',
+            belongs_to: 'Living in the shadow of a great man',
+            created_by: 'icellusedkars',
+            votes: 100
+          }
+        ],
+        {
+          "They're not exactly dogs, are they?": 9,
+          'Living in the shadow of a great man': 1
+        }
+      )
+    ).to.eql([
+      {
+        body:
+          "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+        article_id: 9,
+        author: 'butter_bridge',
+        votes: 16
+      },
+      {
+        body:
+          'The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.',
+        article_id: 1,
+        author: 'butter_bridge',
+        votes: 14
+      },
+      {
+        body:
+          'Replacing the quiet elegance of the dark suit and tie with the casual indifference of these muted earth tones is a form of fashion suicide, but, uh, call me crazy — onyou it works.',
+        article_id: 1,
+        author: 'icellusedkars',
+        votes: 100
+      }
+    ]);
+  });
+  it('returns an array containing an object with the created_at date converted to a JavaScript date object when the passed in object contains a unix timestamp', () => {
+    const formattedComment = formatComments(
+      [
+        {
+          body:
+            "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+          belongs_to: "They're not exactly dogs, are they?",
+          created_by: 'butter_bridge',
+          votes: 16,
+          created_at: 1511354163389
+        }
+      ],
+      {
+        "They're not exactly dogs, are they?": 1
+      }
+    );
+    expect(formattedComment[0].created_at).to.be.instanceOf(Date);
+  });
+});
