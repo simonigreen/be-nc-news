@@ -10,7 +10,6 @@ exports.formatDates = list => {
 };
 
 exports.makeRefObj = list => {
-  // return [];
   const newList = _.cloneDeep(list);
 
   const refObj = {};
@@ -18,7 +17,6 @@ exports.makeRefObj = list => {
   newList.forEach(article => {
     refObj[article.title] = article.article_id;
   });
-  console.log(refObj);
   return refObj;
 };
 
