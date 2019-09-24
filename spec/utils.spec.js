@@ -178,7 +178,26 @@ describe('formatComments', () => {
       }
     ]);
   });
-  it('returns an array containing an object where the "created_by" property renamed to an "author" key, "belongs_to" property renamed to an "article_id" key and the value of the new "article_id" key is the id corresponding to the original title value provided', () => {
+  it('returns an array containing an object where the "created_by" property renamed to an "author" key, "belongs_to" property renamed to an "article_id" key', () => {
+    expect(
+      formatComments(
+        [
+          {
+            body:
+              "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+            belongs_to: "They're not exactly dogs, are they?",
+            created_by: 'butter_bridge',
+            votes: 16,
+            created_at: 1511354163389
+          }
+        ],
+        {
+          "They're not exactly dogs, are they?": 9
+        }
+      )[0]
+    ).to.have.all.keys('body', 'article_id', 'author', 'votes', 'created_at');
+  });
+  it('returns an array containing an object where the value of the new "article_id" key is the id corresponding to the original title value provided', () => {
     expect(
       formatComments(
         [
