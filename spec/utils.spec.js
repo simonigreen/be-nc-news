@@ -30,7 +30,7 @@ describe('formatDates', () => {
       }
     ]);
   });
-  it('returns an object with everything in the object unchanged when the object does not include a created_at property', () => {
+  it('returns an object with everything in the object unchanged apart from the created_at property', () => {
     expect(
       formatDates([
         {
