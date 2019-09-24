@@ -62,6 +62,28 @@ describe('/api', () => {
               });
             });
         });
+        it('status:404 responds with "route not found" when a username that does not exist is entered', () => {
+          return request(app)
+            .get('/api/users/ian_wright')
+            .expect(404)
+            .then(({ body: { msg } }) => {
+              expect(msg).to.equal('invalid username');
+            });
+        });
+      });
+      describe('INVALID METHODS', () => {
+        it('status:405 responds with "method not allowed"', () => {
+          const invalidMethods = ['post', 'patch', 'put', 'delete'];
+          const methodPromises = invalidMethods.map(method => {
+            return request(app)
+              [method]('/api/users/icellusedkars')
+              .expect(405)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.equal('method not allowed');
+              });
+          });
+          return Promise.all(methodPromises);
+        });
       });
     });
   });
