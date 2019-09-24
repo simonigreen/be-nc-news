@@ -3,25 +3,24 @@ const _ = require('lodash');
 exports.formatDates = list => {
   const formattedDatesList = _.cloneDeep(list);
 
-  formattedDatesList.forEach(article => {
+  formattedDatesList.map(article => {
     article.created_at = new Date(article.created_at);
   });
   return formattedDatesList;
 };
 
 exports.makeRefObj = list => {
-  const refObj = {};
-
-  list.forEach(article => {
-    refObj[article.title] = article.article_id;
-  });
+  const refObj = list.reduce((allArticles, article) => {
+    allArticles[article.title] = article.article_id;
+    return allArticles;
+  }, {});
   return refObj;
 };
 
 exports.formatComments = (comments, articleRef) => {
   const formattedComments = _.cloneDeep(comments);
 
-  formattedComments.forEach(comment => {
+  formattedComments.map(comment => {
     // rename 'created_by' to 'author'
     comment.author = comment.created_by;
     delete comment.created_by;
@@ -34,9 +33,7 @@ exports.formatComments = (comments, articleRef) => {
     comment.article_id = articleRef[comment.article_id];
 
     // 'created_at' value is converted to a JavaScript date object
-    if (comment.created_at !== undefined) {
-      comment.created_at = new Date(comment.created_at);
-    }
+    comment.created_at = new Date(comment.created_at);
   });
   return formattedComments;
 };
