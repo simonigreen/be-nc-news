@@ -125,6 +125,61 @@ describe('/api', () => {
             });
         });
       });
+      describe('PATCH', () => {
+        it('status:200 responds with an article object with the votes value updated as specified in the request', () => {
+          return request(app)
+            .patch('/api/articles/2')
+            .send({ inc_votes: 10 })
+            .expect(200)
+            .then(({ body: { article } }) => {
+              expect(article).to.contain.keys(
+                'author',
+                'title',
+                'article_id',
+                'body',
+                'topic',
+                'created_at',
+                'votes'
+              );
+              expect(article.votes).to.equal(10);
+            });
+        });
+        it('status:400 responds with message "bad request" when article_id data type is incorrect', () => {
+          return request(app)
+            .patch('/api/articles/one')
+            .send({ inc_votes: 10 })
+            .expect(400)
+            .then(({ body: { msg } }) => {
+              expect(msg).to.equal('bad request');
+            });
+        });
+        it('status:400 responds with message "bad request" when the request does not include inc_votes', () => {
+          return request(app)
+            .patch('/api/articles/1')
+            .send({ testing_times: 1 })
+            .expect(400)
+            .then(({ body: { msg } }) => {
+              expect(msg).to.equal('bad request');
+            });
+        });
+        it('status:400 responds with message "bad request" when inc_votes data type is incorrect', () => {
+          return request(app)
+            .patch('/api/articles/1')
+            .send({ inc_votes: 'fifteen' })
+            .expect(400)
+            .then(({ body: { msg } }) => {
+              expect(msg).to.equal('bad request');
+            });
+        });
+        it('status:404 responds with message "article not found" when the specified article_id is the correct data type but does not exist', () => {
+          return request(app)
+            .get('/api/articles/30')
+            .expect(404)
+            .then(({ body: { msg } }) => {
+              expect(msg).to.equal('article not found');
+            });
+        });
+      });
       describe('INVALID METHODS', () => {
         it('status:405 responds with "method not allowed"', () => {
           const invalidMethods = ['post', 'put', 'delete'];
