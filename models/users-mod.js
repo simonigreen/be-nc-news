@@ -8,6 +8,6 @@ exports.fetchUserByUsername = ({ username }) => {
     .then(([user]) => {
       return user
         ? user
-        : Promise.reject({ status: 404, msg: 'invalid username' });
+        : Promise.reject({ status: 404, msg: 'user not found' });
     });
 };

@@ -67,7 +67,7 @@ describe('/api', () => {
             .get('/api/users/ian_wright')
             .expect(404)
             .then(({ body: { msg } }) => {
-              expect(msg).to.equal('invalid username');
+              expect(msg).to.equal('user not found');
             });
         });
       });
