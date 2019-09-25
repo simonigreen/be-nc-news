@@ -1,5 +1,7 @@
 process.env.NODE_ENV = 'test';
-const { expect } = require('chai');
+const chai = require('chai');
+const expect = chai.expect;
+chai.use(require('chai-sorted'));
 const request = require('supertest');
 const app = require('../app');
 const connection = require('../db/connection.js');
@@ -88,6 +90,75 @@ describe('/api', () => {
     });
   });
   describe('/articles', () => {
+    describe('GET', () => {
+      it('status:200 responds with an array of article objects, each including a key of "comment_count"', () => {
+        return request(app)
+          .get('/api/articles')
+          .expect(200)
+          .then(({ body: { articles } }) => {
+            expect(articles[0]).to.contain.keys(
+              'author',
+              'title',
+              'article_id',
+              'topic',
+              'created_at',
+              'votes',
+              'comment_count'
+            );
+            expect(articles.length).to.equal(12);
+          });
+      });
+      it('status:200 responds with an array of article objects sorted by date by default and ordered by descending by default', () => {
+        return request(app)
+          .get('/api/articles')
+          .expect(200)
+          .then(({ body: { articles } }) => {
+            expect(articles).to.be.descendingBy('created_at');
+          });
+      });
+      it('status:200 responds with an array of article objects sorted by a valid column and ordered by ascending when the query specifies this', () => {
+        return request(app)
+          .get('/api/articles?sort_by=title&order=asc')
+          .expect(200)
+          .then(({ body: { articles } }) => {
+            expect(articles).to.be.ascendingBy('title');
+          });
+      });
+      it('status:200 responds with an array of article objects filtered by the username specified in the query', () => {
+        return request(app)
+          .get('/api/articles?author=butter_bridge')
+          .expect(200)
+          .then(({ body: { articles } }) => {
+            expect(articles.length).to.equal(3);
+            expect(articles[0].author).to.equal('butter_bridge');
+          });
+      });
+      it('status:200 responds with an array of article objects filtered by the topic specified in the query', () => {
+        return request(app)
+          .get('/api/articles?topic=cats')
+          .expect(200)
+          .then(({ body: { articles } }) => {
+            expect(articles.length).to.equal(1);
+            expect(articles[0].topic).to.equal('cats');
+          });
+      });
+      it('status:400 responds with "bad request" when sort_by column is not valid', () => {
+        return request(app)
+          .get('/api/articles?sort_by=test')
+          .expect(400)
+          .then(({ body: { msg } }) => {
+            expect(msg).to.equal('bad request');
+          });
+      });
+      it('status:400 responds with "bad request" when order value is not valid', () => {
+        return request(app)
+          .get('/api/articles?order=test')
+          .expect(400)
+          .then(({ body: { msg } }) => {
+            expect(msg).to.equal('bad request');
+          });
+      });
+    });
     describe('/:article_id', () => {
       describe('GET', () => {
         it('status:200 responds with an article object that corresponds with the specified article_id', () => {

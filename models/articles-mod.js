@@ -1,5 +1,30 @@
 const connection = require('../db/connection');
 
+exports.fetchAllArticles = ({
+  sort_by = 'created_at',
+  order = 'desc',
+  author,
+  topic
+}) => {
+  console.log(sort_by);
+  console.log(order);
+  const validOrder = ['asc', 'desc'];
+  if (!validOrder.includes(order)) {
+    return Promise.reject({ status: 400, msg: 'bad request' });
+  }
+  return connection
+    .select('articles.*')
+    .orderBy(sort_by, order)
+    .count({ comment_count: 'comment_id' })
+    .from('articles')
+    .leftJoin('comments', 'comments.article_id', 'articles.article_id')
+    .groupBy('articles.article_id')
+    .modify(query => {
+      if (author) query.where('articles.author', '=', author);
+      if (topic) query.where('articles.topic', '=', topic);
+    });
+};
+
 exports.fetchArticleByArticleId = ({ article_id }) => {
   return connection
     .select('articles.*')
