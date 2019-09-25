@@ -49,7 +49,7 @@ describe('/api', () => {
   describe('/users', () => {
     describe('/:username', () => {
       describe('GET', () => {
-        it('status:200 responds with a user object', () => {
+        it('status:200 responds with a user object that corresponds with the specified username', () => {
           return request(app)
             .get('/api/users/butter_bridge')
             .expect(200)
@@ -62,7 +62,7 @@ describe('/api', () => {
               });
             });
         });
-        it('status:404 responds with "route not found" when a username that does not exist is entered', () => {
+        it('status:404 responds with "route not found" when a username that does not exist is specified', () => {
           return request(app)
             .get('/api/users/ian_wright')
             .expect(404)
@@ -83,6 +83,29 @@ describe('/api', () => {
               });
           });
           return Promise.all(methodPromises);
+        });
+      });
+    });
+  });
+  describe('/articles', () => {
+    describe('/:article_id', () => {
+      describe('GET', () => {
+        it('status:200 responds with an article object that corresponds with the specified article_id', () => {
+          return request(app)
+            .get('/api/articles/1')
+            .expect(200)
+            .then(({ body: { article } }) => {
+              expect(article).to.contain.keys(
+                'author',
+                'title',
+                'article_id',
+                'body',
+                'topic',
+                'created_at',
+                'votes',
+                'comment_count'
+              );
+            });
         });
       });
     });
