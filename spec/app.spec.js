@@ -105,7 +105,38 @@ describe('/api', () => {
                 'votes',
                 'comment_count'
               );
+              expect(article.comment_count).to.equal('13');
             });
+        });
+        it('status:400 responds with message "bad request" when article_id data type is incorrect', () => {
+          return request(app)
+            .get('/api/articles/one')
+            .expect(400)
+            .then(({ body: { msg } }) => {
+              expect(msg).to.equal('bad request');
+            });
+        });
+        it('status:404 responds with message "article not found" when the specified article_id is the correct data type but does not exist', () => {
+          return request(app)
+            .get('/api/articles/70')
+            .expect(404)
+            .then(({ body: { msg } }) => {
+              expect(msg).to.equal('article not found');
+            });
+        });
+      });
+      describe('INVALID METHODS', () => {
+        it('status:405 responds with "method not allowed"', () => {
+          const invalidMethods = ['post', 'put', 'delete'];
+          const methodPromises = invalidMethods.map(method => {
+            return request(app)
+              [method]('/api/articles/1')
+              .expect(405)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.equal('method not allowed');
+              });
+          });
+          return Promise.all(methodPromises);
         });
       });
     });
