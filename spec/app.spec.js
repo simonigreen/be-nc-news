@@ -194,6 +194,103 @@ describe('/api', () => {
           return Promise.all(methodPromises);
         });
       });
+      describe('/comments', () => {
+        describe('POST', () => {
+          it('status:201 responds with the posted comment', () => {
+            return request(app)
+              .post('/api/articles/1/comments')
+              .send({
+                username: 'icellusedkars',
+                body: 'I really like this article!'
+              })
+              .expect(201)
+              .then(({ body: { comment } }) => {
+                expect(comment).to.contain.keys(
+                  'article_id',
+                  'comment_id',
+                  'votes',
+                  'created_at',
+                  'author',
+                  'body'
+                );
+                expect(comment.author).to.equal('icellusedkars');
+                expect(comment.body).to.equal('I really like this article!');
+              });
+          });
+          it('status:400 responds with message "bad request" when the comment is missing a username', () => {
+            return request(app)
+              .post('/api/articles/1/comments')
+              .send({
+                body: 'I really like this article!'
+              })
+              .expect(400)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.equal('bad request');
+              });
+          });
+          it('status:400 responds with message "bad request" when the comment is missing a body', () => {
+            return request(app)
+              .post('/api/articles/1/comments')
+              .send({
+                username: 'icellusedkars'
+              })
+              .expect(400)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.equal('bad request');
+              });
+          });
+          it('status:400 responds with message "bad request" when article_id data type is incorrect', () => {
+            return request(app)
+              .post('/api/articles/one/comments')
+              .send({
+                username: 'icellusedkars',
+                body: 'I really like this article!'
+              })
+              .expect(400)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.equal('bad request');
+              });
+          });
+          it('status:422 responds with message "unprocessable entity" when the article_id is the correct type but not found when the comments table references the articles table', () => {
+            return request(app)
+              .post('/api/articles/43/comments')
+              .send({
+                username: 'icellusedkars',
+                body: 'I really like this article!'
+              })
+              .expect(422)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.equal('unprocessable entity');
+              });
+          });
+          it('status:422 responds with message "unprocessable entity" when the username is the correct type but not found when the comments table references the users table', () => {
+            return request(app)
+              .post('/api/articles/1/comments')
+              .send({
+                username: 'test_user',
+                body: 'How is this article so fantastic?'
+              })
+              .expect(422)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.equal('unprocessable entity');
+              });
+          });
+        });
+        describe('INVALID METHODS', () => {
+          it('status:405 responds with "method not allowed"', () => {
+            const invalidMethods = ['put', 'patch', 'delete'];
+            const methodPromises = invalidMethods.map(method => {
+              return request(app)
+                [method]('/api/articles/1/comments')
+                .expect(405)
+                .then(({ body: { msg } }) => {
+                  expect(msg).to.equal('method not allowed');
+                });
+            });
+            return Promise.all(methodPromises);
+          });
+        });
+      });
     });
   });
 });

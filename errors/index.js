@@ -4,7 +4,7 @@ exports.handleCustomErrors = (err, req, res, next) => {
 };
 
 exports.handle400 = (err, req, res, next) => {
-  const psqlCodes = ['22P02'];
+  const psqlCodes = ['22P02', '23502'];
   if (psqlCodes.includes(err.code))
     res.status(400).send({ msg: 'bad request' });
   else next(err);
@@ -16,6 +16,13 @@ exports.handle404 = (req, res, next) => {
 
 exports.send405Error = (req, res, next) => {
   res.status(405).send({ msg: 'method not allowed' });
+};
+
+exports.handle422 = (err, req, res, next) => {
+  const psqlCodes = ['23503'];
+  if (psqlCodes.includes(err.code))
+    res.status(422).send({ msg: 'unprocessable entity' });
+  else next(err);
 };
 
 exports.handle500 = (err, req, res, next) => {
