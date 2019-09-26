@@ -9,19 +9,127 @@
       "topics": [{ "slug": "football", "description": "Footie!" }]
     }
   },
+  "GET /api/users/:username": {
+    "description": "serves an user object according to the username specified in the URL parameter",
+    "queries": [],
+    "exampleResponse": {
+      "user": {
+        "username": "grumpy19",
+        "avatar_url": "https://www.tumbit.com/profile-image/4/original/mr-grumpy.jpg",
+        "name": "Paul Grump"
+      }
+    }
+  },
   "GET /api/articles": {
-    "description": "serves an array of all topics",
+    "description": "serves an array of all articles",
     "queries": ["author", "topic", "sort_by", "order"],
     "exampleResponse": {
       "articles": [
         {
-          "title": "Seafood substitutions are increasing",
-          "topic": "cooking",
           "author": "weegembump",
-          "body": "Text from the article..",
-          "created_at": 1527695953341
+          "title": "Seafood substitutions are increasing",
+          "article_id": 33,
+          "topic": "cooking",
+          "created_at": "2018-05-30T15:59:13.341Z",
+          "votes": 0,
+          "comment_count": "6"
+        },
+        {
+          "author": "happyamy2016",
+          "title": "High Altitude Cooking",
+          "article_id": 28,
+          "topic": "cooking",
+          "created_at": "2018-05-27T03:32:28.514Z",
+          "votes": 0,
+          "comment_count": "5"
         }
       ]
     }
+  },
+  "GET /api/articles/:article_id": {
+    "description": "serves an article object according to the article_id specified in the URL parameter",
+    "queries": [],
+    "exampleResponse": {
+      "article": {
+        "article_id": 1,
+        "title": "Running a Node App",
+        "body": "This is part two of a series on how to get up and running with Systemd and Node.js. This part dives deeper into how to successfully run your app with systemd long-term, and how to set it up in a production environment.",
+        "votes": 0,
+        "topic": "coding",
+        "author": "jessjelly",
+        "created_at": "2016-08-18T12:07:52.389Z",
+        "comment_count": "8"
+      }
+    }
+  },
+  "PATCH /api/articles/:article_id": {
+    "description": "serves an article object according to the article_id specified in the URL parameter with the votes property incremented or decremented according to the amount specified in the request body",
+    "queries": [],
+    "exampleResponse": {
+      "article": {
+        "article_id": 1,
+        "title": "Running a Node App",
+        "body": "This is part two of a series on how to get up and running with Systemd and Node.js. This part dives deeper into how to successfully run your app with systemd long-term, and how to set it up in a production environment.",
+        "votes": 10,
+        "topic": "coding",
+        "author": "jessjelly",
+        "created_at": "2016-08-18T12:07:52.389Z"
+      }
+    }
+  },
+  "POST /api/articles/:article_id/comments": {
+    "description": "serves an object representing the posted comment which is assigned to an article according to the article_id specified in the URL parameter",
+    "queries": [],
+    "exampleResponse": {
+      "comment": {
+        "comment_id": 301,
+        "author": "jessjelly",
+        "article_id": 1,
+        "votes": 0,
+        "created_at": "2019-09-26T14:57:39.852Z",
+        "body": "This article is superb!"
+      }
+    }
+  },
+  "GET /api/articles/:article_id/comments": {
+    "description": "serves an array of comments according to the article_id specified in the URL parameter",
+    "queries": ["sort_by", "order"],
+    "exampleResponse": {
+      "comments": [
+        {
+          "comment_id": 102,
+          "votes": 10,
+          "created_at": "2018-01-26T10:05:00.847Z",
+          "author": "jessjelly",
+          "body": "Quia quos adipisci sint expedita voluptatem id ut at accusantium. Et ex itaque recusandae aut quo. Quia quam similique eum quidem iusto. Aspernatur ducimus vitae vel natus doloribus qui id. Excepturi voluptatem qui quia sit qui eveniet voluptatem. Fugit itaque libero quibusdam sunt."
+        },
+        {
+          "comment_id": 134,
+          "votes": 7,
+          "created_at": "2017-08-21T01:05:57.848Z",
+          "author": "jessjelly",
+          "body": "Nam qui vel neque aut. Quas quos nisi. Eum praesentium quasi commodi saepe assumenda sed vel. Nostrum qui magnam aut occaecati exercitationem aut voluptatibus."
+        }
+      ]
+    }
+  },
+  "PATCH /api/comments/:comment_id": {
+    "description": "serves an updated comment object according to the comment_id specified in the URL parameter with the votes property incremented or decremented according to the amount specified in the request body",
+    "queries": [],
+    "exampleResponse": {
+      "comment": {
+        "comment_id": 1,
+        "author": "tickle122",
+        "article_id": 18,
+        "votes": 69,
+        "created_at": "2016-07-09T18:07:18.932Z",
+        "body": "Itaque quisquam est similique et est perspiciatis reprehenderit voluptatem autem. Voluptatem accusantium eius error adipisci quibusdam doloribus."
+      }
+    }
+  },
+  "DELETE /api/comments/:comment_id": {
+    "description": "deletes the specified comment according to the comment_id specified in the URL parameter",
+    "queries": [],
+    "exampleResponse": {}
   }
 }

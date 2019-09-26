@@ -10,6 +10,42 @@ beforeEach(() => connection.seed.run());
 after(() => connection.destroy());
 
 describe('/api', () => {
+  describe('GET', () => {
+    it('status:200 responds with a json representation of all the available endpoints of the api', () => {
+      return request(app)
+        .get('/api')
+        .expect(200)
+        .then(({ body: { endpoints } }) => {
+          expect(endpoints).to.contain.keys(
+            'GET /api',
+            'GET /api/topics',
+            'GET /api/users/:username',
+            'GET /api/articles',
+            'GET /api/articles/:article_id',
+            'PATCH /api/articles/:article_id',
+            'POST /api/articles/:article_id/comments',
+            'GET /api/articles/:article_id/comments',
+            'PATCH /api/comments/:comment_id',
+            'DELETE /api/comments/:comment_id'
+          );
+        });
+    });
+  });
+  describe('INVALID METHODS', () => {
+    it('status:405 responds with "method not allowed"', () => {
+      const invalidMethods = ['post', 'patch', 'put', 'delete'];
+      const methodPromises = invalidMethods.map(method => {
+        return request(app)
+          [method]('/api')
+          .expect(405)
+          .then(({ body: { msg } }) => {
+            expect(msg).to.equal('method not allowed');
+          });
+      });
+      return Promise.all(methodPromises);
+    });
+  });
+  describe('/', () => {});
   it('status:404 responds with a message "route note found"', () => {
     return request(app)
       .get('/api/test')
