@@ -220,7 +220,7 @@ describe('/api', () => {
             .get('/api/articles/1')
             .expect(200)
             .then(({ body: { article } }) => {
-              expect(article).to.contain.keys(
+              expect(article).to.have.keys(
                 'author',
                 'title',
                 'article_id',
@@ -450,6 +450,18 @@ describe('/api', () => {
               .expect(400)
               .then(({ body: { msg } }) => {
                 expect(msg).to.equal('bad request');
+              });
+          });
+          it('status:400 responds with message "bad request" when username data type is incorrect', () => {
+            return request(app)
+              .post('/api/articles/1/comments')
+              .send({
+                username: 2019,
+                body: 'I really like this article!'
+              })
+              .expect(422)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.equal('unprocessable entity');
               });
           });
           it('status:422 responds with message "unprocessable entity" when the article_id is the correct type but not found when the comments table references the articles table', () => {
