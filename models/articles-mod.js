@@ -6,14 +6,20 @@ exports.fetchAllArticles = ({
   author,
   topic
 }) => {
-  console.log(sort_by);
-  console.log(order);
+  // check if order is valid
   const validOrder = ['asc', 'desc'];
   if (!validOrder.includes(order)) {
     return Promise.reject({ status: 400, msg: 'bad request' });
   }
   return connection
-    .select('articles.*')
+    .select(
+      'articles.author',
+      'articles.title',
+      'articles.article_id',
+      'articles.topic',
+      'articles.created_at',
+      'articles.votes'
+    )
     .orderBy(sort_by, order)
     .count({ comment_count: 'comment_id' })
     .from('articles')
@@ -41,6 +47,7 @@ exports.fetchArticleByArticleId = ({ article_id }) => {
 };
 
 exports.changeArticleVotesByArticleId = ({ article_id }, { inc_votes }) => {
+  // check if inc_votes is valid
   if (typeof inc_votes !== 'number') {
     return Promise.reject({ status: 400, msg: 'bad request' });
   } else {

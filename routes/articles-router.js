@@ -7,14 +7,19 @@ const {
 } = require('../controllers/articles-cont');
 
 const {
-  addCommentToArticleByArticleId
+  addCommentToArticleByArticleId,
+  sendCommentsByArticleId
 } = require('../controllers/comments-cont');
 const { send405Error } = require('../errors');
 
-articlesRouter.route('/').get(sendAllArticles);
+articlesRouter
+  .route('/')
+  .get(sendAllArticles)
+  .all(send405Error);
 
 articlesRouter
   .route('/:article_id/comments')
+  .get(sendCommentsByArticleId)
   .post(addCommentToArticleByArticleId)
   .all(send405Error);
 

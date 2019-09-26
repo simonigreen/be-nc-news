@@ -96,7 +96,7 @@ describe('/api', () => {
           .get('/api/articles')
           .expect(200)
           .then(({ body: { articles } }) => {
-            expect(articles[0]).to.contain.keys(
+            expect(articles[0]).to.have.keys(
               'author',
               'title',
               'article_id',
@@ -142,6 +142,46 @@ describe('/api', () => {
             expect(articles[0].topic).to.equal('cats');
           });
       });
+      it('status:200 responds with an empty array if the author specified exists in the database but has no articles associated with it', () => {
+        return request(app)
+          .get('/api/articles?author=lurker')
+          .expect(200)
+          .then(({ body: { articles } }) => {
+            expect(articles.length).to.equal(0);
+          });
+      });
+      it('status:200 responds with an empty array if the author specified does not exist in the database', () => {
+        return request(app)
+          .get('/api/articles?author=simon_green')
+          .expect(200)
+          .then(({ body: { articles } }) => {
+            expect(articles.length).to.equal(0);
+          });
+      });
+      it('status:200 responds with an empty array if the topic specified exists in the database but has no articles associated with it', () => {
+        return request(app)
+          .get('/api/articles?topic=paper')
+          .expect(200)
+          .then(({ body: { articles } }) => {
+            expect(articles.length).to.equal(0);
+          });
+      });
+      it('status:200 responds with an empty array if the topic specified does not exist in the database', () => {
+        return request(app)
+          .get('/api/articles?topic=pokemon')
+          .expect(200)
+          .then(({ body: { articles } }) => {
+            expect(articles.length).to.equal(0);
+          });
+      });
+      it('status:200 responds with an array of article objects even when an invalid query property is included on the request body', () => {
+        return request(app)
+          .get('/api/articles?sort_by=title&testing=true')
+          .expect(200)
+          .then(({ body: { articles } }) => {
+            expect(articles).to.be.descendingBy('title');
+          });
+      });
       it('status:400 responds with "bad request" when sort_by column is not valid', () => {
         return request(app)
           .get('/api/articles?sort_by=test')
@@ -157,6 +197,20 @@ describe('/api', () => {
           .then(({ body: { msg } }) => {
             expect(msg).to.equal('bad request');
           });
+      });
+    });
+    describe('INVALID METHODS', () => {
+      it('status:405 responds with "method not allowed"', () => {
+        const invalidMethods = ['post', 'patch', 'put', 'delete'];
+        const methodPromises = invalidMethods.map(method => {
+          return request(app)
+            [method]('/api/articles')
+            .expect(405)
+            .then(({ body: { msg } }) => {
+              expect(msg).to.equal('method not allowed');
+            });
+        });
+        return Promise.all(methodPromises);
       });
     });
     describe('/:article_id', () => {
@@ -187,7 +241,7 @@ describe('/api', () => {
               expect(msg).to.equal('bad request');
             });
         });
-        it('status:404 responds with message "article not found" when the specified article_id is the correct data type but does not exist', () => {
+        it('status:404 responds with message "article not found" when the specified article_id is the correct data type but does not exist in the database', () => {
           return request(app)
             .get('/api/articles/70')
             .expect(404)
@@ -215,6 +269,15 @@ describe('/api', () => {
               expect(article.votes).to.equal(10);
             });
         });
+        it('status:200 responds with an article object with the votes value updated even when an additional property is included on the request body in addition to inc_votes', () => {
+          return request(app)
+            .patch('/api/articles/1')
+            .send({ inc_votes: 5, name: 'Paul' })
+            .expect(200)
+            .then(({ body: { article } }) => {
+              expect(article.votes).to.equal(105);
+            });
+        });
         it('status:400 responds with message "bad request" when article_id data type is incorrect', () => {
           return request(app)
             .patch('/api/articles/one')
@@ -224,7 +287,7 @@ describe('/api', () => {
               expect(msg).to.equal('bad request');
             });
         });
-        it('status:400 responds with message "bad request" when the request does not include inc_votes', () => {
+        it('status:400 responds with message "bad request" when the request does not include inc_votes on the request body', () => {
           return request(app)
             .patch('/api/articles/1')
             .send({ testing_times: 1 })
@@ -266,6 +329,40 @@ describe('/api', () => {
         });
       });
       describe('/comments', () => {
+        describe('GET', () => {
+          it('status:200 responds with an array of comments which are related to the article_id specified in the request, sorted by created_at by default and ordered by descending by default', () => {
+            return request(app)
+              .get('/api/articles/1/comments')
+              .expect(200)
+              .then(({ body: { comments } }) => {
+                expect(comments[0]).to.have.keys(
+                  'comment_id',
+                  'votes',
+                  'created_at',
+                  'author',
+                  'body'
+                );
+                expect(comments.length).to.equal(13);
+                expect(comments).to.be.descendingBy('created_at');
+              });
+          });
+          it('status:200 responds with an array of comments sorted by a valid column and ordered by ascending', () => {
+            return request(app)
+              .get('/api/articles/1/comments?sort_by=author&order=asc')
+              .expect(200)
+              .then(({ body: { comments } }) => {
+                expect(comments).to.be.ascendingBy('author');
+              });
+          });
+          it('status:200 responds with no comments when the specified article has no comments', () => {
+            return request(app)
+              .get('/api/articles/3/comments')
+              .expect(200)
+              .then(({ body: { comments } }) => {
+                expect(comments.length).to.equal(0);
+              });
+          });
+        });
         describe('POST', () => {
           it('status:201 responds with the posted comment', () => {
             return request(app)
