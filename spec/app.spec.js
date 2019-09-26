@@ -323,13 +323,13 @@ describe('/api', () => {
               expect(msg).to.equal('bad request');
             });
         });
-        it('status:400 responds with message "bad request" when the request does not include inc_votes on the request body', () => {
+        it('status:200 responds with an unchanged comment when the request does not include inc_votes on the request body', () => {
           return request(app)
             .patch('/api/articles/1')
             .send({ testing_times: 1 })
-            .expect(400)
-            .then(({ body: { msg } }) => {
-              expect(msg).to.equal('bad request');
+            .expect(200)
+            .then(({ body: { article } }) => {
+              expect(article.votes).to.equal(100);
             });
         });
         it('status:400 responds with message "bad request" when inc_votes data type is incorrect', () => {
@@ -563,6 +563,15 @@ describe('/api', () => {
               expect(comment.votes).to.equal(20);
             });
         });
+        it('status:200 responds with an unchanged comment when the request does not include inc_votes on the request body', () => {
+          return request(app)
+            .patch('/api/comments/1')
+            .send({ testing_times: 1 })
+            .expect(200)
+            .then(({ body: { comment } }) => {
+              expect(comment.votes).to.equal(16);
+            });
+        });
         it('status:404 responds with message "comment not found" when the specified comment_id is the correct data type but does not exist', () => {
           return request(app)
             .patch('/api/comments/50')
@@ -576,15 +585,6 @@ describe('/api', () => {
           return request(app)
             .patch('/api/comments/one')
             .send({ inc_votes: 10 })
-            .expect(400)
-            .then(({ body: { msg } }) => {
-              expect(msg).to.equal('bad request');
-            });
-        });
-        it('status:400 responds with message "bad request" when the request does not include inc_votes on the request body', () => {
-          return request(app)
-            .patch('/api/comments/1')
-            .send({ testing_times: 1 })
             .expect(400)
             .then(({ body: { msg } }) => {
               expect(msg).to.equal('bad request');

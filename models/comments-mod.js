@@ -43,20 +43,16 @@ exports.insertCommentToArticleByArticleId = (
     .returning('*');
 };
 
-exports.changeCommentVotesByCommentId = ({ comment_id }, { inc_votes }) => {
-  if (typeof inc_votes !== 'number') {
-    return Promise.reject({ status: 400, msg: 'bad request' });
-  } else {
-    return connection('comments')
-      .where('comments.comment_id', '=', comment_id)
-      .increment('votes', inc_votes)
-      .returning('*')
-      .then(([comment]) => {
-        return comment
-          ? comment
-          : Promise.reject({ status: 404, msg: 'comment not found' });
-      });
-  }
+exports.changeCommentVotesByCommentId = ({ comment_id }, { inc_votes = 0 }) => {
+  return connection('comments')
+    .where('comments.comment_id', '=', comment_id)
+    .increment('votes', inc_votes)
+    .returning('*')
+    .then(([comment]) => {
+      return comment
+        ? comment
+        : Promise.reject({ status: 404, msg: 'comment not found' });
+    });
 };
 
 exports.removeCommentByCommentId = ({ comment_id }) => {
