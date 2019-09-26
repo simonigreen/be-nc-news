@@ -307,7 +307,8 @@ describe('/api', () => {
         });
         it('status:404 responds with message "article not found" when the specified article_id is the correct data type but does not exist', () => {
           return request(app)
-            .get('/api/articles/30')
+            .patch('/api/articles/30')
+            .send({ inc_votes: 10 })
             .expect(404)
             .then(({ body: { msg } }) => {
               expect(msg).to.equal('article not found');
@@ -360,6 +361,38 @@ describe('/api', () => {
               .expect(200)
               .then(({ body: { comments } }) => {
                 expect(comments.length).to.equal(0);
+              });
+          });
+          it('status:400 responds with "bad request" when sort_by column is not valid', () => {
+            return request(app)
+              .get('/api/articles/1/comments?sort_by=test')
+              .expect(400)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.equal('bad request');
+              });
+          });
+          it('status:400 responds with "bad request" when order value is not valid', () => {
+            return request(app)
+              .get('/api/articles/1/comments?order=test')
+              .expect(400)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.equal('bad request');
+              });
+          });
+          it('status:400 responds with "bad request" when article_id type is invalid', () => {
+            return request(app)
+              .get('/api/articles/two/comments')
+              .expect(400)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.equal('bad request');
+              });
+          });
+          it('status:404 responds with "article not found" when article_id type is valid but does not exist', () => {
+            return request(app)
+              .get('/api/articles/50/comments')
+              .expect(404)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.equal('article not found');
               });
           });
         });
@@ -457,6 +490,101 @@ describe('/api', () => {
             });
             return Promise.all(methodPromises);
           });
+        });
+      });
+    });
+  });
+  describe('/comments', () => {
+    describe('/:comment_id', () => {
+      describe('PATCH', () => {
+        it('status:200 responds with an updated comment object with the votes value updated as specified in the request', () => {
+          return request(app)
+            .patch('/api/comments/1')
+            .send({ inc_votes: 4 })
+            .expect(200)
+            .then(({ body: { comment } }) => {
+              expect(comment.votes).to.equal(20);
+            });
+        });
+        it('status:200 responds with an updated comment object with the votes value updated as specified in the request even when body includes an additional property', () => {
+          return request(app)
+            .patch('/api/comments/1')
+            .send({ inc_votes: 4, name: 'tony' })
+            .expect(200)
+            .then(({ body: { comment } }) => {
+              expect(comment.votes).to.equal(20);
+            });
+        });
+        it('status:404 responds with message "comment not found" when the specified comment_id is the correct data type but does not exist', () => {
+          return request(app)
+            .patch('/api/comments/50')
+            .send({ inc_votes: 10 })
+            .expect(404)
+            .then(({ body: { msg } }) => {
+              expect(msg).to.equal('comment not found');
+            });
+        });
+        it('status:400 responds with message "bad request" when comment_id data type is incorrect', () => {
+          return request(app)
+            .patch('/api/comments/one')
+            .send({ inc_votes: 10 })
+            .expect(400)
+            .then(({ body: { msg } }) => {
+              expect(msg).to.equal('bad request');
+            });
+        });
+        it('status:400 responds with message "bad request" when the request does not include inc_votes on the request body', () => {
+          return request(app)
+            .patch('/api/comments/1')
+            .send({ testing_times: 1 })
+            .expect(400)
+            .then(({ body: { msg } }) => {
+              expect(msg).to.equal('bad request');
+            });
+        });
+        it('status:400 responds with message "bad request" when inc_votes data type is incorrect', () => {
+          return request(app)
+            .patch('/api/comments/1')
+            .send({ inc_votes: 'fifteen' })
+            .expect(400)
+            .then(({ body: { msg } }) => {
+              expect(msg).to.equal('bad request');
+            });
+        });
+      });
+      describe('DELETE', () => {
+        it('status:204 deletes comment by comment id', () => {
+          return request(app)
+            .delete('/api/comments/1')
+            .expect(204);
+        });
+      });
+      it('status:400 returns message "bad request" when comment id is the incorrect data type', () => {
+        return request(app)
+          .delete('/api/comments/one')
+          .expect(400);
+      });
+      it('status:404 returns message "comment not found" when comment id is the correct data type but the comment does not exist', () => {
+        return request(app)
+          .delete('/api/comments/50')
+          .expect(404)
+          .then(({ body: { msg } }) => {
+            expect(msg).to.equal('comment not found');
+          });
+      });
+
+      describe('INVALID METHODS', () => {
+        it('status:405 responds with "method not allowed"', () => {
+          const invalidMethods = ['get', 'post', 'put'];
+          const methodPromises = invalidMethods.map(method => {
+            return request(app)
+              [method]('/api/comments/1')
+              .expect(405)
+              .then(({ body: { msg } }) => {
+                expect(msg).to.equal('method not allowed');
+              });
+          });
+          return Promise.all(methodPromises);
         });
       });
     });
