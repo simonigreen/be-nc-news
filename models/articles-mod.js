@@ -6,7 +6,6 @@ exports.fetchAllArticles = ({
   author,
   topic
 }) => {
-  // check if order is valid
   const validOrder = ['asc', 'desc'];
   if (!validOrder.includes(order)) {
     return Promise.reject({ status: 400, msg: 'bad request' });
@@ -47,7 +46,6 @@ exports.fetchArticleByArticleId = ({ article_id }) => {
 };
 
 exports.changeArticleVotesByArticleId = ({ article_id }, { inc_votes }) => {
-  // check if inc_votes is valid
   if (typeof inc_votes !== 'number') {
     return Promise.reject({ status: 400, msg: 'bad request' });
   } else {

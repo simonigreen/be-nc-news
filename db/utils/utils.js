@@ -1,12 +1,10 @@
-const _ = require('lodash');
-
 exports.formatDates = list => {
-  const formattedDatesList = _.cloneDeep(list);
-
-  formattedDatesList.map(article => {
-    article.created_at = new Date(article.created_at);
+  return list.map(({ created_at, ...listItemData }) => {
+    return {
+      created_at: new Date(created_at),
+      ...listItemData
+    };
   });
-  return formattedDatesList;
 };
 
 exports.makeRefObj = list => {
@@ -18,22 +16,13 @@ exports.makeRefObj = list => {
 };
 
 exports.formatComments = (comments, articleRef) => {
-  const formattedComments = _.cloneDeep(comments);
-
-  formattedComments.map(comment => {
-    // rename 'created_by' to 'author'
-    comment.author = comment.created_by;
-    delete comment.created_by;
-
-    // rename 'belongs_to' to 'article_id'
-    comment.article_id = comment.belongs_to;
-    delete comment.belongs_to;
-
-    // update the value of 'article_id' to be the id
-    comment.article_id = articleRef[comment.article_id];
-
-    // 'created_at' value is converted to a JavaScript date object
-    comment.created_at = new Date(comment.created_at);
+  return comments.map(({ created_at, created_by, belongs_to, body, votes }) => {
+    return {
+      author: created_by,
+      article_id: articleRef[belongs_to],
+      created_at: new Date(created_at),
+      body: body,
+      votes: votes
+    };
   });
-  return formattedComments;
 };

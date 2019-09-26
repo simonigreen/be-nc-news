@@ -4,7 +4,6 @@ exports.fetchCommentsByArticleId = (
   { article_id },
   { sort_by = 'created_at', order = 'desc' }
 ) => {
-  // check if order is valid
   const validOrder = ['asc', 'desc'];
   if (!validOrder.includes(order)) {
     return Promise.reject({ status: 400, msg: 'bad request' });
@@ -45,7 +44,6 @@ exports.insertCommentToArticleByArticleId = (
 };
 
 exports.changeCommentVotesByCommentId = ({ comment_id }, { inc_votes }) => {
-  // check if inc_votes is valid
   if (typeof inc_votes !== 'number') {
     return Promise.reject({ status: 400, msg: 'bad request' });
   } else {
