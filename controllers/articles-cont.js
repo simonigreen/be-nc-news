@@ -6,7 +6,7 @@ const {
 
 exports.sendAllArticles = (req, res, next) => {
   fetchAllArticles(req.query)
-    .then(articles => {
+    .then(([articles]) => {
       res.status(200).send({ articles });
     })
     .catch(next);

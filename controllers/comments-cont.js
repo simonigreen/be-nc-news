@@ -7,7 +7,7 @@ const {
 
 exports.sendCommentsByArticleId = (req, res, next) => {
   fetchCommentsByArticleId(req.params, req.query)
-    .then(([unwanted, comments]) => {
+    .then(([comments]) => {
       res.status(200).send({ comments });
     })
     .catch(next);

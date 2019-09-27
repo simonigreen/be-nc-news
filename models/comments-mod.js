@@ -22,7 +22,7 @@ exports.fetchCommentsByArticleId = (
     .from('comments')
     .where('article_id', '=', article_id);
 
-  return Promise.all([fetchArticleByArticleId({ article_id }), fetchComments]);
+  return Promise.all([fetchComments, fetchArticleByArticleId({ article_id })]);
 };
 
 exports.insertCommentToArticleByArticleId = (

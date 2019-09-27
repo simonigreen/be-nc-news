@@ -1,4 +1,6 @@
 const connection = require('../db/connection');
+const { fetchUserByUsername } = require('./users-mod');
+const { fetchTopicBySlug } = require('./topics-mod');
 
 exports.fetchAllArticles = ({
   sort_by = 'created_at',
@@ -10,7 +12,8 @@ exports.fetchAllArticles = ({
   if (!validOrder.includes(order)) {
     return Promise.reject({ status: 400, msg: 'bad request' });
   }
-  return connection
+
+  const fetchArticles = connection
     .select(
       'articles.author',
       'articles.title',
@@ -28,6 +31,13 @@ exports.fetchAllArticles = ({
       if (author) query.where('articles.author', '=', author);
       if (topic) query.where('articles.topic', '=', topic);
     });
+
+  const promiseArray = [fetchArticles];
+
+  if (author) promiseArray.push(fetchUserByUsername({ username: author }));
+  if (topic) promiseArray.push(fetchTopicBySlug(topic));
+
+  return Promise.all(promiseArray);
 };
 
 exports.fetchArticleByArticleId = ({ article_id }) => {

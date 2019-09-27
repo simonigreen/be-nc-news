@@ -186,25 +186,9 @@ describe('/api', () => {
             expect(articles.length).to.equal(0);
           });
       });
-      it('status:200 responds with an empty array if the author specified does not exist in the database', () => {
-        return request(app)
-          .get('/api/articles?author=simon_green')
-          .expect(200)
-          .then(({ body: { articles } }) => {
-            expect(articles.length).to.equal(0);
-          });
-      });
       it('status:200 responds with an empty array if the topic specified exists in the database but has no articles associated with it', () => {
         return request(app)
           .get('/api/articles?topic=paper')
-          .expect(200)
-          .then(({ body: { articles } }) => {
-            expect(articles.length).to.equal(0);
-          });
-      });
-      it('status:200 responds with an empty array if the topic specified does not exist in the database', () => {
-        return request(app)
-          .get('/api/articles?topic=pokemon')
           .expect(200)
           .then(({ body: { articles } }) => {
             expect(articles.length).to.equal(0);
@@ -216,6 +200,22 @@ describe('/api', () => {
           .expect(200)
           .then(({ body: { articles } }) => {
             expect(articles).to.be.descendingBy('title');
+          });
+      });
+      it('status:404 responds with message "topic not found" if the topic specified does not exist in the database', () => {
+        return request(app)
+          .get('/api/articles?topic=pokemon')
+          .expect(404)
+          .then(({ body: { msg } }) => {
+            expect(msg).to.equal('topic not found');
+          });
+      });
+      it('status:404 responds with message "user not found" if the author specified does not exist in the database', () => {
+        return request(app)
+          .get('/api/articles?author=simon_green')
+          .expect(404)
+          .then(({ body: { msg } }) => {
+            expect(msg).to.equal('user not found');
           });
       });
       it('status:400 responds with "bad request" when sort_by column is not valid', () => {
