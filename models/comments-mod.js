@@ -1,4 +1,5 @@
 const connection = require('../db/connection');
+const { fetchArticleByArticleId } = require('./articles-mod');
 
 exports.fetchCommentsByArticleId = (
   { article_id },
@@ -9,28 +10,19 @@ exports.fetchCommentsByArticleId = (
     return Promise.reject({ status: 400, msg: 'bad request' });
   }
 
-  return connection
-    .select('*')
-    .from('articles')
-    .where('article_id', '=', article_id)
-    .then(([article]) => {
-      if (!article) {
-        return Promise.reject({ status: 404, msg: 'article not found' });
-      }
-    })
-    .then(() => {
-      return connection
-        .select(
-          'comments.comment_id',
-          'comments.votes',
-          'comments.created_at',
-          'comments.author',
-          'comments.body'
-        )
-        .orderBy(sort_by, order)
-        .from('comments')
-        .where('article_id', '=', article_id);
-    });
+  const fetchComments = connection
+    .select(
+      'comments.comment_id',
+      'comments.votes',
+      'comments.created_at',
+      'comments.author',
+      'comments.body'
+    )
+    .orderBy(sort_by, order)
+    .from('comments')
+    .where('article_id', '=', article_id);
+
+  return Promise.all([fetchArticleByArticleId({ article_id }), fetchComments]);
 };
 
 exports.insertCommentToArticleByArticleId = (
