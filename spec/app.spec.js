@@ -314,15 +314,6 @@ describe('/api', () => {
               expect(article.votes).to.equal(105);
             });
         });
-        it('status:400 responds with message "bad request" when article_id data type is incorrect', () => {
-          return request(app)
-            .patch('/api/articles/one')
-            .send({ inc_votes: 10 })
-            .expect(400)
-            .then(({ body: { msg } }) => {
-              expect(msg).to.equal('bad request');
-            });
-        });
         it('status:200 responds with an unchanged comment when the request does not include inc_votes on the request body', () => {
           return request(app)
             .patch('/api/articles/1')
@@ -330,6 +321,24 @@ describe('/api', () => {
             .expect(200)
             .then(({ body: { article } }) => {
               expect(article.votes).to.equal(100);
+              expect(article).to.contain.keys(
+                'author',
+                'title',
+                'article_id',
+                'body',
+                'topic',
+                'created_at',
+                'votes'
+              );
+            });
+        });
+        it('status:400 responds with message "bad request" when article_id data type is incorrect', () => {
+          return request(app)
+            .patch('/api/articles/one')
+            .send({ inc_votes: 10 })
+            .expect(400)
+            .then(({ body: { msg } }) => {
+              expect(msg).to.equal('bad request');
             });
         });
         it('status:400 responds with message "bad request" when inc_votes data type is incorrect', () => {
