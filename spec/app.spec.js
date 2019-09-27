@@ -202,22 +202,6 @@ describe('/api', () => {
             expect(articles).to.be.descendingBy('title');
           });
       });
-      it('status:404 responds with message "topic not found" if the topic specified does not exist in the database', () => {
-        return request(app)
-          .get('/api/articles?topic=pokemon')
-          .expect(404)
-          .then(({ body: { msg } }) => {
-            expect(msg).to.equal('topic not found');
-          });
-      });
-      it('status:404 responds with message "user not found" if the author specified does not exist in the database', () => {
-        return request(app)
-          .get('/api/articles?author=simon_green')
-          .expect(404)
-          .then(({ body: { msg } }) => {
-            expect(msg).to.equal('user not found');
-          });
-      });
       it('status:400 responds with "bad request" when sort_by column is not valid', () => {
         return request(app)
           .get('/api/articles?sort_by=test')
@@ -234,6 +218,38 @@ describe('/api', () => {
             expect(msg).to.equal('bad request');
           });
       });
+    });
+    it('status:404 responds with message "topic not found" if the topic specified does not exist in the database', () => {
+      return request(app)
+        .get('/api/articles?topic=pokemon')
+        .expect(404)
+        .then(({ body: { msg } }) => {
+          expect(msg).to.equal('topic not found');
+        });
+    });
+    it('status:404 responds with message "user not found" if the author specified does not exist in the database', () => {
+      return request(app)
+        .get('/api/articles?author=simon_green')
+        .expect(404)
+        .then(({ body: { msg } }) => {
+          expect(msg).to.equal('user not found');
+        });
+    });
+    it('status:404 responds with message "topic not found" if the author specified does exist but the topic does not exist in the database', () => {
+      return request(app)
+        .get('/api/articles?author=butter_bridge&topic=mars')
+        .expect(404)
+        .then(({ body: { msg } }) => {
+          expect(msg).to.equal('topic not found');
+        });
+    });
+    it('status:404 responds with message "user not found" if the topic specified does exist but the author does not exist in the database', () => {
+      return request(app)
+        .get('/api/articles?author=simon_green&topic=cats')
+        .expect(404)
+        .then(({ body: { msg } }) => {
+          expect(msg).to.equal('user not found');
+        });
     });
     describe('INVALID METHODS', () => {
       it('status:405 responds with "method not allowed"', () => {
