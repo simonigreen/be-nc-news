@@ -497,7 +497,7 @@ describe('/api', () => {
                 expect(msg).to.equal('bad request');
               });
           });
-          it('status:400 responds with message "bad request" when username data type is incorrect', () => {
+          it('status:422 responds with message "unprocessable entity" when username data type is incorrect, as username will be changed to a string and the username will not be found in the referenced articles table', () => {
             return request(app)
               .post('/api/articles/1/comments')
               .send({
