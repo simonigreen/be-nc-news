@@ -65,6 +65,7 @@
   "PATCH /api/articles/:article_id": {
     "description": "serves an article object according to the article_id specified in the URL parameter with the votes property incremented or decremented according to the amount specified in the request body",
     "queries": [],
+    "exampleRequest": { "inc_votes": 1 },
     "exampleResponse": {
       "article": {
         "article_id": 1,
@@ -80,6 +81,10 @@
   "POST /api/articles/:article_id/comments": {
     "description": "serves an object representing the posted comment which is assigned to an article according to the article_id specified in the URL parameter",
     "queries": [],
+    "exampleRequest": {
+      "username": "icellusedkars",
+      "body": "I really like this article!"
+    },
     "exampleResponse": {
       "comment": {
         "comment_id": 301,
@@ -116,6 +121,7 @@
   "PATCH /api/comments/:comment_id": {
     "description": "serves an updated comment object according to the comment_id specified in the URL parameter with the votes property incremented or decremented according to the amount specified in the request body",
     "queries": [],
+    "exampleRequest": { "inc_votes": 1 },
     "exampleResponse": {
       "comment": {
         "comment_id": 1,
