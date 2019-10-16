@@ -85,6 +85,30 @@ describe('/api', () => {
     });
   });
   describe('/users', () => {
+    describe('GET', () => {
+      it('status:200 responds with an array of all users', () => {
+        return request(app)
+          .get('/api/users')
+          .expect(200)
+          .then(({ body: { users } }) => {
+            expect(users.length).to.equal(4);
+          });
+      });
+    });
+    describe('INVALID METHODS', () => {
+      it('status:405 responds with "method not allowed"', () => {
+        const invalidMethods = ['post', 'patch', 'put', 'delete'];
+        const methodPromises = invalidMethods.map(method => {
+          return request(app)
+            [method]('/api/users')
+            .expect(405)
+            .then(({ body: { msg } }) => {
+              expect(msg).to.equal('method not allowed');
+            });
+        });
+        return Promise.all(methodPromises);
+      });
+    });
     describe('/:username', () => {
       describe('GET', () => {
         it('status:200 responds with a user object that corresponds with the specified username', () => {
