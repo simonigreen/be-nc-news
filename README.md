@@ -2,6 +2,8 @@
 
 An API that queries a database and allows users to create, read, update and delete data. A full list of the available endpoints, methods, queries available [here](https://nc-news-sg.herokuapp.com/api/).
 
+The repository for the front-end project can be viewed here [here](https://github.com/SimonGreenUK/fe-nc-news) with a hosted version of the front-end project available [here](https://nc-news-sg.netlify.com/)
+
 ## Getting Started
 
 You can either fork this repository or clone it by running the below command on your own computer:
