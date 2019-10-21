@@ -2,36 +2,31 @@ module.exports = [
   {
     username: 'tickle122',
     name: 'Tom Tickle',
-    avatar_url:
-      'https://vignette.wikia.nocookie.net/mrmen/images/8/85/Mr._Tickle_show.jpg/revision/latest/scale-to-width-down/180?cb=20180723214114'
+    avatar_url: 'https://i.imgur.com/5XtrW00.jpg'
   },
   {
     username: 'grumpy19',
     name: 'Paul Grump',
-    avatar_url: 'https://www.tumbit.com/profile-image/4/original/mr-grumpy.jpg'
+    avatar_url: 'https://i.imgur.com/ti9sdGO.jpg'
   },
   {
     username: 'happyamy2016',
     name: 'Amy Happy',
-    avatar_url:
-      'https://vignette1.wikia.nocookie.net/mrmen/images/7/7f/Mr_Happy.jpg/revision/latest?cb=20140102171729'
+    avatar_url: 'https://i.imgur.com/2tM23Mq.jpg'
   },
   {
     username: 'cooljmessy',
     name: 'Peter Messy',
-    avatar_url:
-      'https://vignette.wikia.nocookie.net/mrmen/images/1/1a/MR_MESSY_4A.jpg/revision/latest/scale-to-width-down/250?cb=20170730171002'
+    avatar_url: 'https://i.imgur.com/Q1KSCvV.jpg'
   },
   {
     username: 'weegembump',
     name: 'Gemma Bump',
-    avatar_url:
-      'https://vignette.wikia.nocookie.net/mrmen/images/7/7e/MrMen-Bump.png/revision/latest?cb=20180123225553'
+    avatar_url: 'https://i.imgur.com/PQXVup5.jpg'
   },
   {
     username: 'jessjelly',
     name: 'Jess Jelly',
-    avatar_url:
-      'https://s-media-cache-ak0.pinimg.com/564x/39/62/ec/3962eca164e60cf46f979c1f57d4078b.jpg'
+    avatar_url: 'https://i.imgur.com/SA3s3zo.jpg'
   }
 ];
